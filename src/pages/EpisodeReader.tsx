@@ -3,15 +3,21 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, X } from "lucide-react";
 import { getStoryById } from "@/data/mockData";
+import { useAuth } from "@/context/AuthContext";
 
 export default function EpisodeReader() {
   const { storyId, episodeId } = useParams<{ storyId: string; episodeId: string }>();
   const navigate = useNavigate();
+  const { addToHistory } = useAuth();
   const [showUI, setShowUI] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const story = getStoryById(storyId || "");
   const episode = story?.seasons.flatMap(s => s.episodes).find(e => e.id === episodeId);
+
+  useEffect(() => {
+    if (storyId && episodeId) addToHistory(storyId, episodeId);
+  }, [storyId, episodeId]);
 
   // Ghost UI: hide after 3 seconds of scroll
   const handleScroll = useCallback(() => {
