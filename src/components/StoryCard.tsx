@@ -35,6 +35,9 @@ export function StoryCard({ story, index = 0 }: StoryCardProps) {
         {story.title}
       </h3>
       <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{story.author}</p>
+      <p className="text-xs text-muted-foreground/70 mt-0.5">
+        {story.seasons.length} {story.seasons.length === 1 ? "temporada" : "temporadas"} · {story.seasons.reduce((acc, s) => acc + s.episodes.length, 0)} ep.
+      </p>
     </motion.div>
   );
 }
