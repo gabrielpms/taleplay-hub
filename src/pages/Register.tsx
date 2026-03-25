@@ -34,7 +34,14 @@ export default function Register() {
       await register(name, email, password);
       navigate("/dashboard");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Erro ao criar conta.");
+      const code = (err as { code?: string }).code;
+      if (code === "auth/email-already-in-use") {
+        setError("Email já cadastrado.");
+      } else if (code === "auth/weak-password") {
+        setError("Senha muito fraca. Use pelo menos 6 caracteres.");
+      } else {
+        setError("Erro ao criar conta. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }

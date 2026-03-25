@@ -1,4 +1,14 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  updateProfile,
+  type User as FirebaseUser,
+} from "firebase/auth";
+import { auth, googleProvider } from "@/lib/firebase";
 
 export interface User {
   id: string;
@@ -12,10 +22,6 @@ export interface ReadingEntry {
   storyId: string;
   episodeId: string;
   readAt: string;
-}
-
-interface StoredUser extends User {
-  password?: string;
 }
 
 interface AuthContextType {
@@ -34,6 +40,17 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+function toAppUser(firebaseUser: FirebaseUser): User {
+  const isGoogle = firebaseUser.providerData.some(p => p.providerId === "google.com");
+  return {
+    id: firebaseUser.uid,
+    name: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "Usuário",
+    email: firebaseUser.email || "",
+    avatar: firebaseUser.photoURL || undefined,
+    provider: isGoogle ? "google" : "email",
+  };
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,55 +58,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [readingHistory, setReadingHistory] = useState<ReadingEntry[]>([]);
 
   useEffect(() => {
-    const stored = localStorage.getItem("taleplay_user");
-    if (stored) {
-      const u: User = JSON.parse(stored);
-      setUser(u);
-      setFavorites(JSON.parse(localStorage.getItem(`taleplay_favorites_${u.id}`) || "[]"));
-      setReadingHistory(JSON.parse(localStorage.getItem(`taleplay_history_${u.id}`) || "[]"));
-    }
-    setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
+      if (firebaseUser) {
+        const appUser = toAppUser(firebaseUser);
+        setUser(appUser);
+        setFavorites(JSON.parse(localStorage.getItem(`taleplay_favorites_${appUser.id}`) || "[]"));
+        setReadingHistory(JSON.parse(localStorage.getItem(`taleplay_history_${appUser.id}`) || "[]"));
+      } else {
+        setUser(null);
+        setFavorites([]);
+        setReadingHistory([]);
+      }
+      setLoading(false);
+    });
+    return unsubscribe;
   }, []);
 
-  const persistSession = (u: User) => {
-    setUser(u);
-    localStorage.setItem("taleplay_user", JSON.stringify(u));
-    setFavorites(JSON.parse(localStorage.getItem(`taleplay_favorites_${u.id}`) || "[]"));
-    setReadingHistory(JSON.parse(localStorage.getItem(`taleplay_history_${u.id}`) || "[]"));
-  };
-
   const login = async (email: string, password: string) => {
-    const users: StoredUser[] = JSON.parse(localStorage.getItem("taleplay_users") || "[]");
-    const found = users.find(u => u.email === email && u.password === password);
-    if (!found) throw new Error("Email ou senha incorretos.");
-    const { password: _, ...u } = found;
-    persistSession(u);
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const users: StoredUser[] = JSON.parse(localStorage.getItem("taleplay_users") || "[]");
-    if (users.find(u => u.email === email)) throw new Error("Email já cadastrado.");
-    const newUser: User = { id: crypto.randomUUID(), name, email, provider: "email" };
-    localStorage.setItem("taleplay_users", JSON.stringify([...users, { ...newUser, password }]));
-    persistSession(newUser);
+    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(credential.user, { displayName: name });
+    // Trigger state update with the display name set
+    setUser(toAppUser({ ...credential.user, displayName: name }));
   };
 
   const loginWithGoogle = async () => {
-    const mockUser: User = {
-      id: "google_" + Date.now(),
-      name: "Usuário Google",
-      email: "usuario@gmail.com",
-      avatar: "https://ui-avatars.com/api/?name=UG&background=4285F4&color=fff&size=64",
-      provider: "google",
-    };
-    persistSession(mockUser);
+    await signInWithPopup(auth, googleProvider);
   };
 
-  const logout = () => {
-    setUser(null);
-    setFavorites([]);
-    setReadingHistory([]);
-    localStorage.removeItem("taleplay_user");
+  const logout = async () => {
+    await signOut(auth);
   };
 
   const toggleFavorite = (storyId: string) => {

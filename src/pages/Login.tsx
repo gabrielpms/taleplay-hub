@@ -26,7 +26,14 @@ export default function Login() {
       await login(email, password);
       navigate(from, { replace: true });
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Erro ao entrar.");
+      const code = (err as { code?: string }).code;
+      if (code === "auth/user-not-found" || code === "auth/wrong-password" || code === "auth/invalid-credential") {
+        setError("Email ou senha incorretos.");
+      } else if (code === "auth/too-many-requests") {
+        setError("Muitas tentativas. Tente novamente mais tarde.");
+      } else {
+        setError("Erro ao entrar. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
