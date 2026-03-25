@@ -28,6 +28,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Navbar />
+
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/story/:id" element={<StoryDetail />} />
