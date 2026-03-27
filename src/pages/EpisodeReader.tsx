@@ -171,7 +171,7 @@ export default function EpisodeReader() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           onClick={() => setShowRecap(true)}
-          className="fixed top-1/2 -translate-y-1/2 right-6 z-40 flex items-center gap-2 px-4 py-2.5 bg-surface border border-border rounded-full shadow-lg text-sm font-display font-medium text-foreground hover:bg-surface-hover hover:border-primary/40 transition-colors active:scale-[0.97]"
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-2.5 bg-surface border border-border rounded-full shadow-lg text-sm font-display font-medium text-foreground hover:bg-surface-hover hover:border-primary/40 transition-colors active:scale-[0.97]"
           title="Ver recap dos episódios anteriores"
         >
           <BookOpen className="w-4 h-4 text-primary" />
