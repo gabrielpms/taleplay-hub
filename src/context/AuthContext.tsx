@@ -58,6 +58,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [readingHistory, setReadingHistory] = useState<ReadingEntry[]>([]);
 
   useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, firebaseUser => {
       if (firebaseUser) {
         const appUser = toAppUser(firebaseUser);
@@ -75,21 +79,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
+    if (!auth) throw new Error("Auth not configured");
     await signInWithEmailAndPassword(auth, email, password);
   };
 
   const register = async (name: string, email: string, password: string) => {
+    if (!auth) throw new Error("Auth not configured");
     const credential = await createUserWithEmailAndPassword(auth, email, password);
     await updateProfile(credential.user, { displayName: name });
-    // Trigger state update with the display name set
-    setUser(toAppUser({ ...credential.user, displayName: name }));
+    setUser(toAppUser({ ...credential.user, displayName: name } as FirebaseUser));
   };
 
   const loginWithGoogle = async () => {
+    if (!auth || !googleProvider) throw new Error("Auth not configured");
     await signInWithPopup(auth, googleProvider);
   };
 
   const logout = async () => {
+    if (!auth) return;
     await signOut(auth);
   };
 
