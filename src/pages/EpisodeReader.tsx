@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft, BookOpen, X } from "lucide-react";
 import { getStoryById } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
 import { parseTextWithCharacters } from "@/components/CharacterMention";
@@ -24,17 +24,9 @@ export default function EpisodeReader() {
   const episodeIndex = currentSeason?.episodes.findIndex((e) => e.id === episodeId) ?? -1;
   const previousEpisodes = currentSeason?.episodes.slice(0, episodeIndex) ?? [];
 
-  // Quick recap: show if not the first episode and user hasn't dismissed for this episode
-  const recapKey = `taleplay_recap_${episodeId}`;
-  const [showRecap, setShowRecap] = useState(() => {
-    if (episodeIndex <= 0) return false;
-    return localStorage.getItem(recapKey) !== "dismissed";
-  });
+  const [showRecap, setShowRecap] = useState(false);
 
-  const handleCloseRecap = () => {
-    localStorage.setItem(recapKey, "dismissed");
-    setShowRecap(false);
-  };
+  const handleCloseRecap = () => setShowRecap(false);
 
   // Track which characters have been introduced in this reading session
   // Using a ref so mutations don't trigger re-renders mid-paragraph
@@ -171,6 +163,21 @@ export default function EpisodeReader() {
           </button>
         </div>
       </article>
+
+      {/* Floating Recap Button */}
+      {episodeIndex > 0 && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          onClick={() => setShowRecap(true)}
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-2.5 bg-surface border border-border rounded-full shadow-lg text-sm font-display font-medium text-foreground hover:bg-surface-hover hover:border-primary/40 transition-colors active:scale-[0.97]"
+          title="Ver recap dos episódios anteriores"
+        >
+          <BookOpen className="w-4 h-4 text-primary" />
+          Recap
+        </motion.button>
+      )}
 
       {/* Quick Recap Modal */}
       {currentSeason && episodeIndex > 0 && (
