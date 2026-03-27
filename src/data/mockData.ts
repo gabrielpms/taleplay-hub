@@ -89,7 +89,7 @@ export const stories: Story[] = [
     rating: 4.8,
     readTime: "12 min",
     readers: 14200,
-    dominantColor: "0 60% 20%",
+    dominantColor: "270 60% 20%",
     characters: [
       {
         id: "c1",

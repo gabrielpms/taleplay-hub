@@ -16,7 +16,7 @@
     --popover: 240 10% 9%;
     --popover-foreground: 0 0% 95%;
 
-    --primary: 0 84% 60%;
+    --primary: 270 84% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 240 10% 14%;
@@ -33,23 +33,23 @@
 
     --border: 240 10% 16%;
     --input: 240 10% 16%;
-    --ring: 0 84% 60%;
+    --ring: 270 84% 60%;
 
     --radius: 0.75rem;
 
     --surface: 240 10% 9%;
     --surface-hover: 240 10% 12%;
     --surface-active: 240 10% 14%;
-    --glow-primary: 0 84% 60%;
+    --glow-primary: 270 84% 60%;
 
     --sidebar-background: 240 10% 6%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 0 84% 60%;
+    --sidebar-primary: 270 84% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 10% 14%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 240 10% 12%;
-    --sidebar-ring: 0 84% 60%;
+    --sidebar-ring: 270 84% 60%;
 
     --font-display: 'Satoshi', system-ui, -apple-system, sans-serif;
     --font-body: 'Newsreader', 'Georgia', serif;
