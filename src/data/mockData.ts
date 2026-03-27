@@ -1,3 +1,11 @@
+export interface Character {
+  id: string;
+  name: string;
+  role: "protagonist" | "antagonist" | "supporting" | "unknown";
+  description: string;
+  traits?: string[];
+}
+
 export interface Story {
   id: string;
   title: string;
@@ -11,6 +19,7 @@ export interface Story {
   readers: number;
   seasons: Season[];
   dominantColor: string; // HSL for ambient mood
+  characters?: Character[];
 }
 
 export interface Season {
@@ -28,6 +37,8 @@ export interface Episode {
   content: string;
   status: "draft" | "published";
   readTime: string;
+  summary?: string;
+  keyPoints?: string[];
 }
 
 const loremContent = `A noite caiu sobre a cidade como um véu de seda negra. As luzes dos postes piscavam em ritmo irregular, como se tentassem transmitir uma mensagem em código. Elena caminhava pelas ruas vazias, seus passos ecoando contra o asfalto molhado pela chuva recente.
@@ -79,6 +90,22 @@ export const stories: Story[] = [
     readTime: "12 min",
     readers: 14200,
     dominantColor: "0 60% 20%",
+    characters: [
+      {
+        id: "c1",
+        name: "Elena",
+        role: "protagonist",
+        description: "Ex-agente de inteligência com instintos aguçados por anos de treinamento. Passados cinco anos em fuga, ela busca respostas sobre o Projeto Fênix — a operação que destruiu sua vida.",
+        traits: ["determinada", "perceptiva", "desconfiada"],
+      },
+      {
+        id: "c2",
+        name: "Marcus",
+        role: "unknown",
+        description: "Antigo aliado de Elena que ressurgiu das sombras. Carrega segredos sobre o Projeto Fênix e alega ter os arquivos originais que todos tentaram apagar. Seus motivos permanecem obscuros.",
+        traits: ["misterioso", "calculista", "ambíguo"],
+      },
+    ],
     seasons: [
       {
         id: "s1",
@@ -86,10 +113,67 @@ export const stories: Story[] = [
         title: "A Revelação",
         description: "Elena descobre que o passado nunca ficou para trás.",
         episodes: [
-          { id: "e1", number: 1, title: "Cinzas", content: loremContent, status: "published", readTime: "12 min" },
-          { id: "e2", number: 2, title: "O Retorno", content: loremContent, status: "published", readTime: "15 min" },
-          { id: "e3", number: 3, title: "Fantasmas", content: loremContent, status: "published", readTime: "10 min" },
-          { id: "e4", number: 4, title: "Código Vermelho", content: loremContent, status: "published", readTime: "14 min" },
+          {
+            id: "e1",
+            number: 1,
+            title: "Cinzas",
+            content: loremContent,
+            status: "published",
+            readTime: "12 min",
+            summary: "Elena caminha por uma cidade noturna quando percebe que está sendo seguida. Confronta o rastreador e descobre que é Marcus — um aliado que ela acreditava estar morto.",
+            keyPoints: [
+              "Elena percebe que está sendo seguida desde a estação",
+              "Marcus reaparece vivo após anos desaparecido",
+              "O Projeto Fênix é mencionado pela primeira vez",
+              "Marcus revela ter os arquivos originais em um pen drive",
+              "Os dois partem juntos em busca de um lugar seguro",
+            ],
+          },
+          {
+            id: "e2",
+            number: 2,
+            title: "O Retorno",
+            content: loremContent,
+            status: "published",
+            readTime: "15 min",
+            summary: "Elena e Marcus chegam a um esconderijo improvisado. Enquanto analisam os arquivos do pen drive, descobrem que o Projeto Fênix ainda está em operação e que alguém dentro da agência os está rastreando.",
+            keyPoints: [
+              "Os arquivos revelam operações ativas do Projeto Fênix",
+              "Há um informante dentro da agência",
+              "Elena reconhece o nome de um antigo superior nos documentos",
+              "Marcus admite ter sido capturado e escapado recentemente",
+            ],
+          },
+          {
+            id: "e3",
+            number: 3,
+            title: "Fantasmas",
+            content: loremContent,
+            status: "published",
+            readTime: "10 min",
+            summary: "Com agentes do Projeto Fênix no encalço, Elena e Marcus precisam entrar em contato com uma fonte antiga. Mas a fonte já não é confiável — ou talvez nunca tenha sido.",
+            keyPoints: [
+              "Elena tenta contato com Vera, sua antiga mentora",
+              "O esconderijo é descoberto e eles precisam fugir",
+              "Revelação: o Projeto Fênix tem ramificações internacionais",
+              "Marcus é ferido durante a fuga",
+            ],
+          },
+          {
+            id: "e4",
+            number: 4,
+            title: "Código Vermelho",
+            content: loremContent,
+            status: "published",
+            readTime: "14 min",
+            summary: "Acuados, Elena e Marcus executam um plano arriscado para recuperar provas adicionais. O sucesso da missão revela a verdade chocante sobre a noite que mudou tudo.",
+            keyPoints: [
+              "Elena e Marcus invadem um servidor seguro da agência",
+              "Descobrem que o Projeto Fênix foi criado por insiders do governo",
+              "Elena encontra arquivos sobre o que realmente aconteceu cinco anos atrás",
+              "Uma nova ameaça surge: alguém mais poderoso do que imaginavam",
+            ],
+          },
         ],
       },
       {
@@ -98,8 +182,29 @@ export const stories: Story[] = [
         title: "A Caçada",
         description: "Com os arquivos em mãos, Elena se torna a caçada.",
         episodes: [
-          { id: "e5", number: 1, title: "Fuga", content: loremContent, status: "published", readTime: "13 min" },
-          { id: "e6", number: 2, title: "Alianças", content: loremContent, status: "draft", readTime: "11 min" },
+          {
+            id: "e5",
+            number: 1,
+            title: "Fuga",
+            content: loremContent,
+            status: "published",
+            readTime: "13 min",
+            summary: "A verdade sobre o Projeto Fênix veio à tona e Elena se tornou o alvo número um. Com Marcus ao seu lado, ela traça uma rota de fuga enquanto as autoridades cerram o cerco.",
+            keyPoints: [
+              "Elena é declarada terrorista pelas autoridades",
+              "Marcus revela uma saída secreta que conhece da época da agência",
+              "Primeiro confronto direto com os agentes do Projeto Fênix",
+              "Elena decide ir ao público com as provas",
+            ],
+          },
+          {
+            id: "e6",
+            number: 2,
+            title: "Alianças",
+            content: loremContent,
+            status: "draft",
+            readTime: "11 min",
+          },
         ],
       },
     ],
@@ -116,6 +221,22 @@ export const stories: Story[] = [
     readTime: "18 min",
     readers: 23400,
     dominantColor: "260 50% 20%",
+    characters: [
+      {
+        id: "c3",
+        name: "Lyra",
+        role: "protagonist",
+        description: "Jovem guerreira que carrega inconscientemente o último fragmento de magia do mundo. Criada nas fronteiras do reino, ela desconhece sua verdadeira origem e o peso de seu destino.",
+        traits: ["corajosa", "impulsiva", "leal"],
+      },
+      {
+        id: "c4",
+        name: "Elena",
+        role: "supporting",
+        description: "Conselheira real que reconhece o poder de Lyra antes de qualquer outra pessoa. Guarda segredos sobre a verdadeira história da magia no reino.",
+        traits: ["sábia", "cautelosa", "protetora"],
+      },
+    ],
     seasons: [
       {
         id: "s3",
@@ -123,9 +244,51 @@ export const stories: Story[] = [
         title: "O Despertar",
         description: "Lyra descobre seus poderes em meio ao caos.",
         episodes: [
-          { id: "e7", number: 1, title: "A Marca", content: loremContent, status: "published", readTime: "18 min" },
-          { id: "e8", number: 2, title: "O Exílio", content: loremContent, status: "published", readTime: "16 min" },
-          { id: "e9", number: 3, title: "Sangue e Cristal", content: loremContent, status: "published", readTime: "20 min" },
+          {
+            id: "e7",
+            number: 1,
+            title: "A Marca",
+            content: loremContent,
+            status: "published",
+            readTime: "18 min",
+            summary: "Lyra manifesta poderes desconhecidos durante um ataque ao vilarejo. Uma marca mágica aparece em sua mão, atraindo a atenção de forças que ela ainda não compreende.",
+            keyPoints: [
+              "O vilarejo de Lyra é atacado por criaturas das sombras",
+              "A marca desperta durante o combate",
+              "Elena aparece para proteger Lyra e revela que a conhece",
+              "Lyra descobre que é a última portadora da magia primordial",
+            ],
+          },
+          {
+            id: "e8",
+            number: 2,
+            title: "O Exílio",
+            content: loremContent,
+            status: "published",
+            readTime: "16 min",
+            summary: "Lyra é banida do reino por decreto real, acusada de bruxaria. Junto a Elena, ela parte em exílio rumo às Terras Sem Nome, onde dizem existir respostas sobre sua marca.",
+            keyPoints: [
+              "O rei decreta o exílio de Lyra sob pressão dos inquisidores",
+              "Elena escolhe acompanhar Lyra no exílio",
+              "Primeira revelação sobre as Terras Sem Nome",
+              "Lyra aprende a controlar minimamente sua magia",
+            ],
+          },
+          {
+            id: "e9",
+            number: 3,
+            title: "Sangue e Cristal",
+            content: loremContent,
+            status: "published",
+            readTime: "20 min",
+            summary: "Nas Terras Sem Nome, Lyra e Elena encontram os Guardiões dos Cristais — os últimos praticantes de magia. A revelação sobre a origem da marca muda tudo.",
+            keyPoints: [
+              "Os Guardiões revelam que a marca é antiga como o mundo",
+              "Elena revela sua verdadeira identidade: ela é uma Guardiã",
+              "Lyra descobre que pode tanto restaurar quanto destruir a magia",
+              "Uma visão mostra o rei aliado às forças das sombras",
+            ],
+          },
         ],
       },
     ],
@@ -142,6 +305,22 @@ export const stories: Story[] = [
     readTime: "14 min",
     readers: 8900,
     dominantColor: "200 60% 15%",
+    characters: [
+      {
+        id: "c5",
+        name: "Daniel",
+        role: "protagonist",
+        description: "Engenheiro de som obsessivo que passou anos catalogando frequências incomuns. Sua curiosidade científica o leva a descobrir algo que desafia toda a física conhecida.",
+        traits: ["curioso", "metódico", "solitário"],
+      },
+      {
+        id: "c6",
+        name: "Marcus",
+        role: "supporting",
+        description: "Colega de Daniel na universidade, especialista em física quântica. Cético a princípio, torna-se o primeiro a acreditar nas descobertas de Daniel após ver evidências irrefutáveis.",
+        traits: ["cético", "inteligente", "pragmático"],
+      },
+    ],
     seasons: [
       {
         id: "s4",
@@ -149,8 +328,36 @@ export const stories: Story[] = [
         title: "O Sinal",
         description: "Daniel encontra algo que não deveria existir.",
         episodes: [
-          { id: "e10", number: 1, title: "Ruído Branco", content: loremContent, status: "published", readTime: "14 min" },
-          { id: "e11", number: 2, title: "A Fenda", content: loremContent, status: "published", readTime: "16 min" },
+          {
+            id: "e10",
+            number: 1,
+            title: "Ruído Branco",
+            content: loremContent,
+            status: "published",
+            readTime: "14 min",
+            summary: "Daniel registra uma frequência anômala durante uma gravação de campo. Ao analisar o sinal, percebe que ele não corresponde a nada catalogado na física — e que parece estar respondendo a ele.",
+            keyPoints: [
+              "Daniel registra a frequência 0Hz durante uma gravação noturna",
+              "O sinal parece ter padrões que imitam respostas emocionais",
+              "Marcus descarta como erro de equipamento",
+              "Daniel decide investigar a origem do sinal sozinho",
+            ],
+          },
+          {
+            id: "e11",
+            number: 2,
+            title: "A Fenda",
+            content: loremContent,
+            status: "published",
+            readTime: "16 min",
+            summary: "Seguindo o sinal até sua origem, Daniel encontra uma fenda no espaço-tempo dentro de um laboratório abandonado. Ao atravessá-la brevemente, retorna com memórias de um mundo que nunca existiu.",
+            keyPoints: [
+              "Daniel localiza a fonte do sinal num laboratório abandonado dos anos 80",
+              "A fenda é visível apenas em certas frequências sonoras",
+              "Primeira travessia: Daniel entra e sai em segundos",
+              "Marcus finalmente acredita ao ver as evidências físicas da travessia",
+            ],
+          },
         ],
       },
     ],

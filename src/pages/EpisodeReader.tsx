@@ -1,9 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, X } from "lucide-react";
 import { getStoryById } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
+import { parseTextWithCharacters } from "@/components/CharacterMention";
+import QuickRecapModal from "@/components/QuickRecapModal";
 
 export default function EpisodeReader() {
   const { storyId, episodeId } = useParams<{ storyId: string; episodeId: string }>();
@@ -13,30 +15,58 @@ export default function EpisodeReader() {
   const [scrollProgress, setScrollProgress] = useState(0);
 
   const story = getStoryById(storyId || "");
-  const episode = story?.seasons.flatMap(s => s.episodes).find(e => e.id === episodeId);
+  const currentSeason = story?.seasons.find((s) =>
+    s.episodes.some((e) => e.id === episodeId)
+  );
+  const episode = currentSeason?.episodes.find((e) => e.id === episodeId);
+
+  // Find previous episodes in this season
+  const episodeIndex = currentSeason?.episodes.findIndex((e) => e.id === episodeId) ?? -1;
+  const previousEpisodes = currentSeason?.episodes.slice(0, episodeIndex) ?? [];
+
+  // Quick recap: show if not the first episode and user hasn't dismissed for this episode
+  const recapKey = `taleplay_recap_${episodeId}`;
+  const [showRecap, setShowRecap] = useState(() => {
+    if (episodeIndex <= 0) return false;
+    return localStorage.getItem(recapKey) !== "dismissed";
+  });
+
+  const handleCloseRecap = () => {
+    localStorage.setItem(recapKey, "dismissed");
+    setShowRecap(false);
+  };
+
+  // Track which characters have been introduced in this reading session
+  // Using a ref so mutations don't trigger re-renders mid-paragraph
+  const shownCharactersRef = useRef<Set<string>>(new Set());
+
+  // Parse paragraphs with character highlighting
+  const paragraphs = useMemo(() => {
+    if (!episode) return [];
+    return episode.content.split("\n\n").filter(Boolean);
+  }, [episode]);
+
+  const characters = story?.characters ?? [];
+
+  const parsedParagraphs = useMemo(() => {
+    // Reset seen characters for each episode
+    shownCharactersRef.current = new Set();
+    return paragraphs.map((p) =>
+      parseTextWithCharacters(p, characters, shownCharactersRef.current)
+    );
+  }, [paragraphs, characters]);
 
   useEffect(() => {
     if (storyId && episodeId) addToHistory(storyId, episodeId);
   }, [storyId, episodeId]);
 
-  // Ghost UI: hide after 3 seconds of scroll
-  const handleScroll = useCallback(() => {
-    setShowUI(true);
-
-    const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
-
-    const timer = setTimeout(() => setShowUI(false), 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
+  // Ghost UI: hide after 3 seconds of no activity
   useEffect(() => {
     let timeout: ReturnType<typeof setTimeout>;
     const onScroll = () => {
       setShowUI(true);
       clearTimeout(timeout);
-      
+
       const scrollTop = window.scrollY;
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
@@ -51,15 +81,13 @@ export default function EpisodeReader() {
     };
   }, []);
 
-  if (!story || !episode) {
+  if (!story || !currentSeason || !episode) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-muted-foreground">Episódio não encontrado</p>
       </div>
     );
   }
-
-  const paragraphs = episode.content.split("\n\n").filter(Boolean);
 
   return (
     <div className="min-h-screen bg-background" onMouseMove={() => setShowUI(true)}>
@@ -118,7 +146,7 @@ export default function EpisodeReader() {
           </p>
 
           <div className="space-y-6">
-            {paragraphs.map((p, i) => (
+            {parsedParagraphs.map((nodes, i) => (
               <motion.p
                 key={i}
                 initial={{ opacity: 0 }}
@@ -126,7 +154,7 @@ export default function EpisodeReader() {
                 transition={{ duration: 0.5, delay: i * 0.05 }}
                 className="text-reading text-foreground/90"
               >
-                {p}
+                {nodes}
               </motion.p>
             ))}
           </div>
@@ -143,6 +171,17 @@ export default function EpisodeReader() {
           </button>
         </div>
       </article>
+
+      {/* Quick Recap Modal */}
+      {currentSeason && episodeIndex > 0 && (
+        <QuickRecapModal
+          isOpen={showRecap}
+          onClose={handleCloseRecap}
+          currentEpisode={episode}
+          previousEpisodes={previousEpisodes}
+          season={currentSeason}
+        />
+      )}
     </div>
   );
 }
