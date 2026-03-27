@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, BookOpen, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, X } from "lucide-react";
 import { getStoryById } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
 import { parseTextWithCharacters } from "@/components/CharacterMention";
@@ -23,6 +23,16 @@ export default function EpisodeReader() {
   // Find previous episodes in this season
   const episodeIndex = currentSeason?.episodes.findIndex((e) => e.id === episodeId) ?? -1;
   const previousEpisodes = currentSeason?.episodes.slice(0, episodeIndex) ?? [];
+
+  // Episode navigation
+  const seasonIndex = story?.seasons.findIndex((s) => s.id === currentSeason?.id) ?? -1;
+  const prevEpisode = episodeIndex > 0 ? currentSeason?.episodes[episodeIndex - 1] : null;
+  const nextEpisode = currentSeason && episodeIndex < currentSeason.episodes.length - 1
+    ? currentSeason.episodes[episodeIndex + 1]
+    : null;
+  const nextSeason = !nextEpisode && story && seasonIndex < story.seasons.length - 1
+    ? story.seasons[seasonIndex + 1]
+    : null;
 
   const [showRecap, setShowRecap] = useState(false);
 
@@ -153,11 +163,55 @@ export default function EpisodeReader() {
         </motion.div>
 
         {/* End of episode */}
-        <div className="mt-16 pt-8 border-t border-border text-center">
-          <p className="text-muted-foreground font-display text-sm mb-4">Fim do episódio</p>
+        <div className="mt-16 pt-8 border-t border-border">
+          <p className="text-muted-foreground font-display text-sm text-center mb-6">Fim do episódio</p>
+
+          <div className="flex items-center justify-between gap-3">
+            {/* Previous episode */}
+            {prevEpisode ? (
+              <button
+                onClick={() => navigate(`/read/${storyId}/${prevEpisode.id}`)}
+                className="flex items-center gap-2 px-4 py-3 bg-surface border border-border rounded-xl font-display font-medium text-sm hover:bg-surface-hover transition-colors active:scale-[0.98] min-w-0"
+              >
+                <ArrowLeft className="w-4 h-4 flex-shrink-0 text-muted-foreground" />
+                <span className="truncate text-left">
+                  <span className="block text-[10px] text-muted-foreground font-normal">Capítulo anterior</span>
+                  Ep. {prevEpisode.number}
+                </span>
+              </button>
+            ) : (
+              <div />
+            )}
+
+            {/* Next episode or next season */}
+            {nextEpisode ? (
+              <button
+                onClick={() => navigate(`/read/${storyId}/${nextEpisode.id}`)}
+                className="flex items-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-xl font-display font-medium text-sm hover:bg-primary/90 transition-colors active:scale-[0.98] min-w-0"
+              >
+                <span className="truncate text-right">
+                  <span className="block text-[10px] text-primary-foreground/70 font-normal">Próximo capítulo</span>
+                  Ep. {nextEpisode.number}
+                </span>
+                <ArrowRight className="w-4 h-4 flex-shrink-0" />
+              </button>
+            ) : nextSeason ? (
+              <button
+                onClick={() => navigate(`/read/${storyId}/${nextSeason.episodes[0].id}`)}
+                className="flex items-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-xl font-display font-medium text-sm hover:bg-primary/90 transition-colors active:scale-[0.98] min-w-0"
+              >
+                <span className="truncate text-right">
+                  <span className="block text-[10px] text-primary-foreground/70 font-normal">Próxima temporada</span>
+                  {nextSeason.title}
+                </span>
+                <ArrowRight className="w-4 h-4 flex-shrink-0" />
+              </button>
+            ) : null}
+          </div>
+
           <button
             onClick={() => navigate(`/story/${storyId}`)}
-            className="px-6 py-3 bg-surface border border-border rounded-lg font-display font-medium text-sm hover:bg-surface-hover transition-colors active:scale-[0.98]"
+            className="w-full mt-4 px-6 py-3 bg-surface border border-border rounded-xl font-display font-medium text-sm text-muted-foreground hover:bg-surface-hover transition-colors active:scale-[0.98]"
           >
             Voltar para a história
           </button>
