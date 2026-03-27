@@ -67,7 +67,7 @@ export default function QuickRecapModal({
               </div>
 
               {/* Episodes list */}
-              <div className="overflow-y-auto flex-1 px-6 py-4 space-y-5">
+              <div className="overflow-y-auto flex-1 min-h-0 px-6 py-4 space-y-5">
                 {episodesWithSummary.length === 0 ? (
                   <p className="text-sm text-muted-foreground text-center py-4">
                     Nenhum resumo disponível para os episódios anteriores.
