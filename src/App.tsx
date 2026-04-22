@@ -9,6 +9,7 @@ import Index from "./pages/Index.tsx";
 import StoryDetail from "./pages/StoryDetail.tsx";
 import EpisodeReader from "./pages/EpisodeReader.tsx";
 import Login from "./pages/Login.tsx";
+import ForgotPassword from "./pages/ForgotPassword.tsx";
 import Register from "./pages/Register.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import MyStories from "./pages/dashboard/MyStories.tsx";
@@ -31,6 +32,7 @@ const App = () => (
         <Route path="/story/:id" element={<StoryDetail />} />
         <Route path="/read/:storyId/:episodeId" element={<EpisodeReader />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
         <Route
           path="/dashboard"
