@@ -94,7 +94,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resetPassword = async (email: string) => {
     if (!auth) throw new Error("Auth not configured");
-    await sendPasswordResetEmail(auth, email);
+    await sendPasswordResetEmail(auth, email, {
+      url: window.location.origin,
+      handleCodeInApp: false,
+    });
   };
 
   const loginWithGoogle = async () => {
