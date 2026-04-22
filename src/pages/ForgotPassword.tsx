@@ -18,14 +18,20 @@ export default function ForgotPassword() {
     setError("");
     setLoading(true);
     try {
-      await resetPassword(email);
+      await resetPassword(email.trim());
       setSent(true);
     } catch (err: unknown) {
       const code = (err as { code?: string; message?: string }).code;
-      if (code === "auth/user-not-found" || code === "auth/invalid-email") {
+      if ((err as { message?: string }).message === "Auth not configured") {
+        setError("A recuperação de senha ainda não está configurada. Adicione as credenciais reais do Firebase para enviar emails.");
+      } else if (code === "auth/user-not-found" || code === "auth/invalid-email") {
         setError("Informe um email válido cadastrado na plataforma.");
-      } else if ((err as { message?: string }).message === "Auth not configured") {
-        setError("A recuperação de senha ainda não está configurada.");
+      } else if (code === "auth/too-many-requests") {
+        setError("Muitas tentativas. Aguarde alguns minutos e tente novamente.");
+      } else if (code === "auth/unauthorized-domain") {
+        setError("Este domínio precisa ser autorizado no Firebase Authentication.");
+      } else if (code === "auth/invalid-api-key" || code === "auth/api-key-not-valid") {
+        setError("A chave do Firebase é inválida. Verifique as credenciais configuradas.");
       } else {
         setError("Não foi possível enviar o email. Tente novamente.");
       }
