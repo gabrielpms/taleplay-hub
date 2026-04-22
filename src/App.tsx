@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/context/AuthContext";
 import { Navbar } from "@/components/Navbar";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index.tsx";
@@ -22,35 +23,37 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <Navbar />
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <Navbar />
 
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/story/:id" element={<StoryDetail />} />
-        <Route path="/read/:storyId/:episodeId" element={<EpisodeReader />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/register" element={<Register />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Navigate to="/dashboard/stories" replace />} />
-          <Route path="stories" element={<MyStories />} />
-          <Route path="favorites" element={<Favorites />} />
-          <Route path="reading" element={<Reading />} />
-          <Route path="account" element={<Account />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </TooltipProvider>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/story/:id" element={<StoryDetail />} />
+          <Route path="/read/:storyId/:episodeId" element={<EpisodeReader />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/register" element={<Register />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="/dashboard/stories" replace />} />
+            <Route path="stories" element={<MyStories />} />
+            <Route path="favorites" element={<Favorites />} />
+            <Route path="reading" element={<Reading />} />
+            <Route path="account" element={<Account />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
