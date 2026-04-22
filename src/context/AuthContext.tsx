@@ -3,6 +3,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithPopup,
   signOut,
   updateProfile,
@@ -29,6 +30,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   logout: () => void;
   favorites: string[];
@@ -90,6 +92,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(toAppUser({ ...credential.user, displayName: name } as FirebaseUser));
   };
 
+  const resetPassword = async (email: string) => {
+    if (!auth) throw new Error("Auth not configured");
+    await sendPasswordResetEmail(auth, email);
+  };
+
   const loginWithGoogle = async () => {
     if (!auth || !googleProvider) throw new Error("Auth not configured");
     await signInWithPopup(auth, googleProvider);
@@ -125,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={{
-      user, loading, login, register, loginWithGoogle, logout,
+      user, loading, login, register, resetPassword, loginWithGoogle, logout,
       favorites, toggleFavorite, isFavorite,
       readingHistory, addToHistory,
     }}>
