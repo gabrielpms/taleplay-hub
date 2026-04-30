@@ -1,5 +1,7 @@
 import { HeroCarousel } from "@/components/HeroCarousel";
 import { StoryShelf } from "@/components/StoryShelf";
+import { StoryRankList } from "@/components/StoryRankList";
+import { StoryHighlightShelf } from "@/components/StoryHighlightShelf";
 import { trendingStories, newStories, stories } from "@/data/mockData";
 
 const Index = () => {
@@ -8,8 +10,8 @@ const Index = () => {
       <HeroCarousel />
       <div className="py-8">
         <StoryShelf title="Em Alta" stories={trendingStories} />
-        <StoryShelf title="Adicionados Recentemente" stories={newStories} />
-        <StoryShelf title="Para Você" stories={stories} />
+        <StoryRankList title="Adicionados Recentemente" stories={newStories} />
+        <StoryHighlightShelf title="Para Você" stories={stories} />
       </div>
     </div>
   );
