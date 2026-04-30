@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { StoryCard } from "./StoryCard";
 import type { Story } from "@/data/mockData";
 
@@ -11,24 +11,13 @@ interface StoryShelfProps {
 export function StoryShelf({ title, stories }: StoryShelfProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const scroll = (dir: "left" | "right") => {
-    if (!scrollRef.current) return;
-    const amount = dir === "left" ? -400 : 400;
-    scrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
-  };
-
   return (
-    <section className="mb-10">
-      <div className="flex items-center justify-between px-8 md:px-16 lg:px-24 mb-4">
-        <h2 className="font-display text-xl font-bold">{title}</h2>
-        <div className="flex gap-1">
-          <button onClick={() => scroll("left")} className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface transition-colors">
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button onClick={() => scroll("right")} className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-surface transition-colors">
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
+    <section className="mb-12">
+      <div className="flex items-center justify-between px-8 md:px-16 lg:px-24 mb-5">
+        <h2 className="font-display text-2xl font-bold tracking-tight">{title}</h2>
+        <button className="flex items-center gap-0.5 text-sm text-primary hover:text-primary/80 transition-colors font-medium">
+          Ver tudo <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
       <div className="relative">
         <div
